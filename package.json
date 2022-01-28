@@ -1,0 +1,42 @@
+{
+  "name": "jackal-v2",
+  "version": "0.0.1",
+  "private": false,
+  "scripts": {
+    "dev": "node ace serve --watch",
+    "build": "node ace build --production",
+    "build:run": "node ace build --production && cp .env build/.env && cd build && yarn install --production && cross-env NODE_ENV=production node server.js",
+    "start": "node server.js",
+    "lint": "eslint . --ext=.ts"
+  },
+  "engines": {
+    "node": "16.13.x"
+  },
+  "dependencies": {
+    "@adonisjs/core": "^5.4.0",
+    "dayjs": "^1.10.7",
+    "fluent-ffmpeg": "^2.1.2",
+    "lodash": "^4.17.21",
+    "miniget": "^4.2.2",
+    "mustache": "^4.2.0",
+    "proxy-addr": "^2.0.7",
+    "reflect-metadata": "^0.1.13",
+    "source-map-support": "^0.5.21",
+    "telegraf": "^4.6.0",
+    "ytcog": "^2.3.0"
+  },
+  "devDependencies": {
+    "@adonisjs/assembler": "^5.3.0",
+    "@types/fluent-ffmpeg": "^2.1.20",
+    "@types/lodash": "^4.14.178",
+    "@types/mustache": "^4.1.2",
+    "adonis-preset-ts": "^2.1.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.7.0",
+    "eslint-plugin-adonis": "^2.1.0",
+    "pino-pretty": "^7.5.1",
+    "typescript": "~4.5",
+    "youch": "^3.1.0",
+    "youch-terminal": "^2.1.0"
+  }
+}
