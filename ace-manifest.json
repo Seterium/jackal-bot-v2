@@ -5,7 +5,15 @@
       "commandPath": "./commands/BotCbQuery",
       "commandName": "bot:cbquery",
       "description": "Create bot CallbackQuery controller",
-      "args": [],
+      "args": [
+        {
+          "type": "spread",
+          "propertyName": "names",
+          "name": "names",
+          "required": true,
+          "description": "Controllers class names"
+        }
+      ],
       "aliases": [],
       "flags": []
     },
@@ -14,9 +22,41 @@
       "commandPath": "./commands/BotCommand",
       "commandName": "bot:command",
       "description": "Create bot Command controller",
-      "args": [],
+      "args": [
+        {
+          "type": "spread",
+          "propertyName": "names",
+          "name": "names",
+          "required": true
+        }
+      ],
       "aliases": [],
       "flags": []
+    },
+    "make:bot_controllers": {
+      "settings": {},
+      "commandPath": "./commands/MakeBotControllers",
+      "commandName": "make:bot_controllers",
+      "description": "",
+      "args": [
+        {
+          "type": "spread",
+          "propertyName": "names",
+          "name": "names",
+          "required": true,
+          "description": "Controllers class names"
+        }
+      ],
+      "aliases": [],
+      "flags": [
+        {
+          "name": "for-commands",
+          "propertyName": "forCommands",
+          "type": "boolean",
+          "description": "Controllers for commands",
+          "alias": "c"
+        }
+      ]
     },
     "test": {
       "settings": {},

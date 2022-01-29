@@ -1,5 +1,7 @@
+import { CommandController } from '@types'
+
 import { Telegraf } from 'telegraf'
-import { Update } from 'telegraf/typings/core/types/typegram'
+import { Message, Update } from 'telegraf/typings/core/types/typegram'
 
 import Controllers from 'App/Controllers'
 
@@ -16,12 +18,16 @@ export default class Bot {
   /**
    * Список зарегистрированных обработчиков Command
    */
-  private static commands: any = {}
+  private static commands: {
+    [key: string]: string
+  }
 
   /**
    * Список зарегистрированных обработчиков CallbackQuery
    */
-  private static cbQueries: any = {}
+  private static cbQueries: {
+    [key: string]: string
+  }
 
   constructor () {
     this.bot = new Telegraf(Env.get('BOT_TOKEN'))
@@ -45,13 +51,6 @@ export default class Bot {
 
       process.exit()
     }
-
-    console.log('Jackal Bot started')
-
-    console.log({
-      commands: Bot.commands,
-      cbQueries: Bot.cbQueries,
-    })
   }
 
   /**
@@ -89,7 +88,26 @@ export default class Bot {
   /**
    * Инициализация обработчиков Command
    */
-  private initCommandsHandler (): void {}
+  private initCommandsHandler (): void {
+    Bot.commands.forEach(({ command, handler }) => {
+      this.bot.command(command, (context) => {
+        const handlerClass: CommandController = new (Controllers.commands[handler])()
+
+        const update = context.update as Update.MessageUpdate
+        const message = update.message as Message.TextMessage
+
+        handlerClass.context = context
+        handlerClass.message = message
+        handlerClass.update = update
+
+        if (!handlerClass) {
+          return
+        }
+
+        handlerClass.handle()
+      })
+    })
+  }
 
   /**
    * Инициализация обработчиков CallbackQuery
@@ -99,20 +117,20 @@ export default class Bot {
   /**
    * Регистрация обработчика Command
    *
-   * @param {string} name Имя команды
+   * @param {string} command Имя команды
    * @param {string} handler Указатель метода-обработчика
    */
-  public static command (name: string, handler: string) {
-    this.commands[name] = handler
+  public static command (command: string, handler: string) {
+    this.commands[command] = handler
   }
 
   /**
    * Регистрация обработчика CallbackQuery
    *
-   * @param {string} name Имя команды
+   * @param {string} cbQuery Имя команды
    * @param {string} handler Указатель метода-обработчика
    */
-  public static cbQuery (name: string, handler: string) {
-    this.cbQueries[name] = handler
+  public static cbQuery (cbQuery: string, handler: string) {
+    this.cbQueries[cbQuery] = handler
   }
 }

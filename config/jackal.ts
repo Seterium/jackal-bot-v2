@@ -1,6 +1,6 @@
-import { JackalConfig } from '@types'
+import { Config } from '@types'
 
-const jackalConfig: JackalConfig = {
+const jackalConfig: Config = {
   users: [
     // @Ameroid
     1348870840,
