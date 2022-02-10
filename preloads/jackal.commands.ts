@@ -1,3 +1,3 @@
-import Bot from 'App/Jackal/Bot'
+import JackalBot from 'App/Services/JackalBot'
 
-Bot.command('start', 'StartCommandController')
+JackalBot.command('start', 'StartCommandController')

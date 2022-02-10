@@ -9,7 +9,8 @@
     "App": "app",
     "Config": "config",
     "Database": "database",
-    "Contracts": "contracts"
+    "Contracts": "contracts",
+    "helpers": "helpers"
   },
   "preloads": [
     "./preloads/jackal.callbackQueries",

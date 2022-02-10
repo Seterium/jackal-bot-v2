@@ -1,6 +1,6 @@
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
-import Bot from 'App/Jackal/Bot'
+import JackalBot from 'App/Services/JackalBot'
 
 export default class AppProvider {
   constructor (protected app: ApplicationContract) {
@@ -15,9 +15,9 @@ export default class AppProvider {
   }
 
   public async ready () {
-    const bot = new Bot()
+    const bot = new JackalBot()
 
-    await bot.init()
+    bot.init()
   }
 
   public async shutdown () {

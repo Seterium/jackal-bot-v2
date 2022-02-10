@@ -1,7 +1,7 @@
-import { CommandController } from '@types'
+import { CommandController, CbQueryController, ParamsObject, Schema, CastType } from '@types'
 
 import { Telegraf } from 'telegraf'
-import { Message, Update } from 'telegraf/typings/core/types/typegram'
+import { CallbackQuery, Message, Update } from 'telegraf/typings/core/types/typegram'
 
 import Controllers from 'App/Controllers'
 
@@ -9,7 +9,9 @@ import Env from '@ioc:Adonis/Core/Env'
 
 import config from 'Config/jackal'
 
-export default class Bot {
+import cast from 'helpers/cast'
+
+export default class JackalBot {
   /**
    * Инстанс Telegraf
    */
@@ -19,20 +21,26 @@ export default class Bot {
    * Список зарегистрированных обработчиков Command
    */
   private static commands: {
-    [key: string]: string
+    [command: string]: string
   }
 
   /**
    * Список зарегистрированных обработчиков CallbackQuery
    */
   private static cbQueries: {
-    [key: string]: string
+    [cbQuery: string]: {
+      handler: string,
+      schema: Schema['params']
+    }
   }
 
   constructor () {
     this.bot = new Telegraf(Env.get('BOT_TOKEN'))
   }
 
+  /**
+   * Инициализация системы
+   */
   public init () {
     this.initMiddleware()
 
@@ -89,9 +97,15 @@ export default class Bot {
    * Инициализация обработчиков Command
    */
   private initCommandsHandler (): void {
-    Bot.commands.forEach(({ command, handler }) => {
+    Object.keys(Bot.commands).forEach((command) => {
+      const handler = Bot.commands[command]
+
       this.bot.command(command, (context) => {
         const handlerClass: CommandController = new (Controllers.commands[handler])()
+
+        if (!handlerClass) {
+          return
+        }
 
         const update = context.update as Update.MessageUpdate
         const message = update.message as Message.TextMessage
@@ -100,11 +114,11 @@ export default class Bot {
         handlerClass.message = message
         handlerClass.update = update
 
-        if (!handlerClass) {
-          return
+        try {
+          handlerClass.handle()
+        } catch (error) {
+          console.log(error)
         }
-
-        handlerClass.handle()
       })
     })
   }
@@ -112,7 +126,32 @@ export default class Bot {
   /**
    * Инициализация обработчиков CallbackQuery
    */
-  private initCbQueriesHandler (): void {}
+  private initCbQueriesHandler (): void {
+    this.bot.on('callback_query', async (context) => {
+      const update = context.update as Update.CallbackQueryUpdate
+      const callbackQuery = update.callback_query as CallbackQuery.DataCallbackQuery
+
+      const [ action, ...rawParams ] = callbackQuery.data.split('|')
+
+      if (Bot.cbQueries[action] === undefined) {
+        return
+      }
+
+      const { handler, schema } = Bot.cbQueries[action]
+
+      const handlerClass: CbQueryController<any> = new (Controllers.cbQueries[handler])()
+
+      handlerClass.context = context
+      handlerClass.update = update
+      handlerClass.params = this.parseCbQueryParams(rawParams, schema.params)
+
+      try {
+        handlerClass.handle()
+      } catch (error) {
+        console.log(error)
+      }
+    })
+  }
 
   /**
    * Регистрация обработчика Command
@@ -131,6 +170,60 @@ export default class Bot {
    * @param {string} handler Указатель метода-обработчика
    */
   public static cbQuery (cbQuery: string, handler: string) {
-    this.cbQueries[cbQuery] = handler
+    const { action, params } = this.createCbQueryParamsSchema(cbQuery)
+
+    this.cbQueries[action] = {
+      handler,
+      schema: params,
+    }
+  }
+
+  /**
+   * Парсинг шаблона CallbackQuery и создание схемы преобразования параметров
+   *
+   * @param {string} template
+   * @returns {Schema} Schema
+   */
+  private static createCbQueryParamsSchema (template: string): Schema {
+    const schema: Schema = {
+      action: '',
+      params: [],
+    }
+
+    const [ action, ...paramsSchemas ] = template.split('|')
+
+    schema.action = action
+
+    paramsSchemas.forEach((paramsSchema) => {
+      const [ key, type ] = paramsSchema.split(':')
+
+      schema.params.push({
+        key,
+        type: type as CastType,
+      })
+    })
+
+    return schema
+  }
+
+  /**
+   * Парсинг параметров CallbackQuery
+   */
+  private parseCbQueryParams (payload: string[], paramsSchema: Schema['params']): ParamsObject {
+    const params: ParamsObject = {}
+
+    paramsSchema.forEach(({ key, type }, index: number) => {
+      const value = payload[index]
+
+      if (value === undefined || type === undefined) {
+        params[key] = value
+
+        return
+      }
+
+      params[key] = cast(value, type)
+    })
+
+    return params
   }
 }

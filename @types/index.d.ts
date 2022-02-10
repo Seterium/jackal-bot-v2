@@ -1,7 +1,10 @@
 import { Context } from 'telegraf'
 import { Message, Update } from 'telegraf/typings/core/types/typegram'
 
-// export namespace Jackal {
+export type ParamsObject = {
+  [key: string]: number | string | boolean
+}
+
 export type Config = {
   /**
    * Пользователи, с которыми бот будет взаимодействовать
@@ -59,14 +62,9 @@ export interface CbQueryController<Params> {
   public context: Context<Update>
 
   /**
-   * Инстанс объекта сообщения
-   */
-  public message: Message.TextMessage
-
-  /**
    * Инстанс объекта обновления
    */
-  public update: Update.MessageUpdate
+  public update: Update.CallbackQueryUpdate
 
   /**
    * Параметры callbackQuery
@@ -77,4 +75,20 @@ export interface CbQueryController<Params> {
    * Обработчик команды
    */
   public handle (): void
+}
+
+export enum CastType {
+  string = 'string',
+  number = 'number',
+  boolean = 'boolean'
+}
+
+export type CastValue = string | number | boolean
+
+export type Schema = {
+  action: string,
+  params: Array<{
+    key: string,
+    type: CastType
+  }>
 }

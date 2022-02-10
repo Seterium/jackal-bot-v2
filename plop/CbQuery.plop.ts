@@ -1,16 +1,16 @@
 import { CbQueryController } from '@types'
 
 import { Context } from 'telegraf'
-import { Message, Update } from 'telegraf/typings/core/types/typegram'
+import { Update } from 'telegraf/typings/core/types/typegram'
+
+import getLocale from 'App/Helpers/getLocale'
 
 type Params = {}
 
 export default class {{ className }} implements CbQueryController<Params> {
   public context: Context<Update>
 
-  public message: Message.TextMessage
-
-  public update: Update.MessageUpdate
+  public update: Update.CallbackQueryUpdate
 
   public params: Params
 

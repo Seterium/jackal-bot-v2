@@ -1,3 +1,3 @@
-import Bot from 'App/Jackal/Bot'
+import JackalBot from 'App/Services/JackalBot'
 
-Bot.cbQuery('back/messageId:number', 'GoBackCbQueryController')
+JackalBot.cbQuery('back|messageId:number', 'GoBackCbQueryController')

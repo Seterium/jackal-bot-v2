@@ -9,4 +9,7 @@ export default Env.rules({
   DRIVE_DISK: Env.schema.enum(['local'] as const),
 
   BOT_TOKEN: Env.schema.string(),
+
+  YT_COOKIE: Env.schema.string(),
+  YT_USER_AGENT: Env.schema.string(),
 })

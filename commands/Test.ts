@@ -39,13 +39,50 @@ export default class Test extends BaseCommand {
   public static description = ''
 
   public async run () {
-    const template: string = 'action/key1:string/key2:number/key3:boolean/key4'
-    const schema: Schema = this.createSchema(template)
+    const template: string = 'action:param1:param2:param3'
+    const schema = {
+      param1: {
+        type: 'number',
+      },
+      param2: {
+        type: 'string',
+      },
+      param3: {
+        type: 'boolean',
+      },
+    }
 
-    const query: string = 'action/value/256/1'
-    const [ action, ...queryParams ] = query.split('/')
+    const [ action, ...paramsRaw ] = template.split(':')
 
-    const params: ParamsList = this.parseQueryParams(queryParams, schema)
+    const params = {}
+
+    const paramsKeys = Object.keys(schema)
+
+    paramsRaw.forEach((value, paramIndex) => {
+      const param = paramsKeys[paramIndex]
+
+      if (schema[param] !== undefined) {
+        params[param] = cast(value, schema[param].type)
+      }
+    })
+
+    console.log({
+      action,
+      params,
+    })
+
+    // console.log({
+    //   action,
+    //   params,
+    // })
+
+    // const template: string = 'action/key1:string/key2:number/key3:boolean/key4'
+    // const schema: Schema = this.createSchema(template)
+
+    // const query: string = 'action/value/256/1'
+    // const [ action, ...queryParams ] = query.split('/')
+
+    // const params: ParamsList = this.parseQueryParams(queryParams, schema)
   }
 
   private createSchema (template: string): Schema {
@@ -63,7 +100,7 @@ export default class Test extends BaseCommand {
 
       schema.params.push({
         key,
-        type,
+        type: type as CastType,
       })
     })
 
