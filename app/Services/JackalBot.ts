@@ -97,8 +97,8 @@ export default class JackalBot {
    * Инициализация обработчиков Command
    */
   private initCommandsHandler (): void {
-    Object.keys(Bot.commands).forEach((command) => {
-      const handler = Bot.commands[command]
+    Object.keys(JackalBot.commands).forEach((command) => {
+      const handler = JackalBot.commands[command]
 
       this.bot.command(command, (context) => {
         const handlerClass: CommandController = new (Controllers.commands[handler])()
@@ -133,11 +133,11 @@ export default class JackalBot {
 
       const [ action, ...rawParams ] = callbackQuery.data.split('|')
 
-      if (Bot.cbQueries[action] === undefined) {
+      if (JackalBot.cbQueries[action] === undefined) {
         return
       }
 
-      const { handler, schema } = Bot.cbQueries[action]
+      const { handler, schema } = JackalBot.cbQueries[action]
 
       const handlerClass: CbQueryController<any> = new (Controllers.cbQueries[handler])()
 

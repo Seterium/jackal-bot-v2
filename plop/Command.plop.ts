@@ -13,4 +13,8 @@ export default class {{ className }} implements CommandController {
   public update: Update.MessageUpdate
 
   public handle (): void {}
+
+  private getLocale (path: string, params?: any) {
+    return getLocale(`{{ dir }}/{{ name }}/${path}`, params)
+  }
 }

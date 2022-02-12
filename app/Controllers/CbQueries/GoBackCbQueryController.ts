@@ -17,4 +17,8 @@ export default class GoBackCbQueryController implements CbQueryController<Params
   public params: Params
 
   public handle (): void {}
+
+  private getLocale (path: string, params?: any) {
+    return getLocale(`CbQueries/GoBack/${path}`, params)
+  }
 }

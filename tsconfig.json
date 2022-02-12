@@ -28,7 +28,6 @@
     },
     "types": [
       "@adonisjs/core",
-      "telegraf/@types",
       "./@types"
     ]
   }

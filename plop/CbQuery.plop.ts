@@ -15,4 +15,8 @@ export default class {{ className }} implements CbQueryController<Params> {
   public params: Params
 
   public handle (): void {}
+
+  private getLocale (path: string, params?: any) {
+    return getLocale(`{{ dir }}/{{ name }}/${path}`, params)
+  }
 }

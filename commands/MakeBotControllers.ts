@@ -52,7 +52,9 @@ export default class MakeBotControllers extends BaseCommand {
       }
 
       const rendered = mustache.render(template, {
+        name: string.pascalCase(name),
         className,
+        dir,
       })
 
       fs.writeFileSync(`${path}/${className}.ts`, rendered)
